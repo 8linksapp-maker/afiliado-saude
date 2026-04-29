@@ -1,0 +1,82 @@
+---
+import { getCollection } from 'astro:content';
+import PostCard from './PostCard.astro';
+
+interface Props {
+  limit?: number;
+}
+
+const { limit = 6 } = Astro.props;
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, limit);
+---
+
+<section class="posts-section section" id="posts">
+  <div class="container">
+    <div class="section-header animate-on-scroll">
+      <span class="section-label">Blog</span>
+      <h2 class="section-title">Últimos Posts</h2>
+      <p class="section-subtitle">
+        Confira nossos reviews mais recentes, dicas e comparativos para fazer as melhores escolhas.
+      </p>
+    </div>
+
+    <div class="posts-grid stagger-children animate-on-scroll">
+      {posts.map((post) => (
+        <PostCard
+          title={post.data.title}
+          description={post.data.description}
+          pubDate={post.data.pubDate}
+          image={post.data.image}
+          imageAlt={post.data.imageAlt}
+          category={post.data.category}
+          slug={post.id}
+        />
+      ))}
+    </div>
+
+    <div class="posts-cta animate-on-scroll">
+      <div class="divider">
+        <div class="divider-icon"></div>
+      </div>
+      <a href="/blog" class="btn btn-outline">
+        Ver Todos os Posts
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .posts-section {
+    background: var(--color-bg-warm);
+  }
+
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-xl);
+    margin-bottom: var(--space-2xl);
+  }
+
+  .posts-cta {
+    text-align: center;
+  }
+
+  @media (max-width: 1024px) {
+    .posts-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .posts-grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-lg);
+    }
+  }
+</style>
