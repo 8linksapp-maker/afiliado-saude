@@ -36,12 +36,15 @@ const features = [
           Avaliamos produtos físicos das maiores lojas online e produtos digitais
           das principais plataformas, sempre com honestidade e transparência.
         </p>
-        <a href="/blog" class="btn btn-primary">
-          Conheça Nosso Conteúdo
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M5 12h14M12 5l7 7-7 7"/>
-          </svg>
-        </a>
+        <div class="about-actions">
+          <a href="/sobre" class="btn btn-primary">
+            Saiba Mais
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+          <a href="/contato" class="btn btn-outline">Fale Conosco</a>
+        </div>
       </div>
 
       <div class="about-features stagger-children animate-on-scroll">
@@ -103,7 +106,9 @@ const features = [
     font-weight: var(--fw-light);
   }
 
-  .about .btn {
+  .about-actions {
+    display: flex;
+    gap: var(--space-md);
     margin-top: var(--space-md);
   }
 

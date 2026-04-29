@@ -1,0 +1,440 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const contactMethods = [
+  {
+    icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
+    title: 'E-mail',
+    detail: 'contato@seublog.com.br',
+    description: 'Respondemos em até 24 horas úteis.',
+  },
+  {
+    icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>`,
+    title: 'Instagram',
+    detail: '@seublog',
+    description: 'Dicas rápidas e bastidores dos reviews.',
+  },
+  {
+    icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.43z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="currentColor" stroke="none"/></svg>`,
+    title: 'YouTube',
+    detail: 'SeuBlog Reviews',
+    description: 'Vídeo reviews e unboxings toda semana.',
+  },
+];
+
+const faqs = [
+  {
+    q: 'Vocês testam todos os produtos que recomendam?',
+    a: 'Sim. Cada produto é testado por no mínimo 7 dias antes de publicarmos um review. Em alguns casos, acompanhamos o produto por semanas.',
+  },
+  {
+    q: 'Como vocês ganham dinheiro?',
+    a: 'Através de links de afiliado. Quando você compra um produto pelo nosso link, recebemos uma pequena comissão sem custo adicional para você. Isso nos permite manter o blog 100% gratuito.',
+  },
+  {
+    q: 'Posso sugerir um produto para review?',
+    a: 'Claro! Use o formulário abaixo ou mande um e-mail. Priorizamos produtos mais pedidos pela nossa comunidade.',
+  },
+  {
+    q: 'Vocês fazem parcerias com marcas?',
+    a: 'Fazemos parcerias editoriais com marcas, mas nunca comprometemos nossa opinião. Todo conteúdo patrocinado é claramente identificado.',
+  },
+];
+---
+
+<BaseLayout
+  title="Contato"
+  description="Entre em contato com o SeuBlog. Tire dúvidas, sugira produtos para review ou proponha uma parceria."
+>
+  <!-- Hero -->
+  <section class="contact-hero">
+    <div class="contact-hero-bg"></div>
+    <div class="container contact-hero-inner">
+      <span class="section-label">Contato</span>
+      <h1 class="contact-hero-title">
+        Fale
+        <span class="contact-hero-accent">conosco</span>
+      </h1>
+      <p class="contact-hero-subtitle">
+        Tem uma dúvida, sugestão de produto ou quer propor uma parceria?
+        Adoramos ouvir nossos leitores.
+      </p>
+    </div>
+  </section>
+
+  <!-- Contact Methods -->
+  <section class="contact-methods">
+    <div class="container">
+      <div class="methods-grid stagger-children animate-on-scroll">
+        {contactMethods.map((method) => (
+          <div class="method-card">
+            <div class="method-icon" set:html={method.icon} />
+            <h3 class="method-title">{method.title}</h3>
+            <span class="method-detail">{method.detail}</span>
+            <p class="method-description">{method.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Form + FAQ -->
+  <section class="contact-main section">
+    <div class="container">
+      <div class="contact-grid">
+        <!-- Form -->
+        <div class="contact-form-wrapper animate-on-scroll">
+          <h2 class="contact-form-title">Envie uma mensagem</h2>
+          <p class="contact-form-subtitle">
+            Preencha o formulário abaixo e retornaremos o mais breve possível.
+          </p>
+
+          <form class="contact-form" id="contactForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="name" class="form-label">Nome</label>
+                <input type="text" id="name" name="name" class="form-input" placeholder="Seu nome" required />
+              </div>
+              <div class="form-group">
+                <label for="email" class="form-label">E-mail</label>
+                <input type="email" id="email" name="email" class="form-input" placeholder="seu@email.com" required />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="subject" class="form-label">Assunto</label>
+              <select id="subject" name="subject" class="form-input form-select" required>
+                <option value="" disabled selected>Selecione um assunto</option>
+                <option value="sugestao">Sugestão de produto</option>
+                <option value="duvida">Dúvida sobre um review</option>
+                <option value="parceria">Proposta de parceria</option>
+                <option value="outro">Outro</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="message" class="form-label">Mensagem</label>
+              <textarea id="message" name="message" class="form-input form-textarea" placeholder="Sua mensagem..." rows="5" required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">
+              Enviar Mensagem
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            </button>
+          </form>
+        </div>
+
+        <!-- FAQ -->
+        <div class="contact-faq animate-on-scroll">
+          <h2 class="faq-title">Perguntas Frequentes</h2>
+          <div class="faq-list">
+            {faqs.map((faq) => (
+              <details class="faq-item">
+                <summary class="faq-question">{faq.q}</summary>
+                <p class="faq-answer">{faq.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Hero */
+  .contact-hero {
+    position: relative;
+    padding: calc(var(--navbar-height) + var(--space-4xl)) 0 var(--space-4xl);
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .contact-hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 30%, rgba(216, 243, 220, 0.4) 0%, transparent 70%),
+      var(--color-bg-warm);
+    z-index: -1;
+  }
+
+  .contact-hero-title {
+    font-family: var(--font-heading);
+    font-size: var(--fs-5xl);
+    font-weight: var(--fw-extrabold);
+    letter-spacing: -0.03em;
+    margin-bottom: var(--space-xl);
+    line-height: var(--lh-tight);
+  }
+
+  .contact-hero-accent {
+    font-family: var(--font-display);
+    font-weight: var(--fw-regular);
+    font-style: italic;
+    color: var(--color-primary);
+  }
+
+  .contact-hero-subtitle {
+    font-size: var(--fs-lg);
+    color: var(--color-text-muted);
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: var(--lh-relaxed);
+    font-weight: var(--fw-light);
+  }
+
+  /* Contact Methods */
+  .contact-methods {
+    padding: var(--space-3xl) 0;
+    background: var(--color-bg);
+  }
+
+  .methods-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-xl);
+  }
+
+  .method-card {
+    text-align: center;
+    padding: var(--space-2xl);
+    background: var(--color-bg-warm);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-border-light);
+    transition: all var(--transition-base);
+    animation: fadeInUp 500ms var(--ease-out-expo) both;
+  }
+
+  .method-card:hover {
+    border-color: var(--color-border);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-4px);
+  }
+
+  .method-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-lg);
+    background: var(--color-primary-surface);
+    color: var(--color-primary);
+    margin-bottom: var(--space-lg);
+  }
+
+  .method-title {
+    font-size: var(--fs-base);
+    font-weight: var(--fw-bold);
+    letter-spacing: var(--ls-tight);
+    margin-bottom: var(--space-xs);
+  }
+
+  .method-detail {
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semibold);
+    color: var(--color-primary);
+    display: block;
+    margin-bottom: var(--space-sm);
+  }
+
+  .method-description {
+    font-size: var(--fs-xs);
+    color: var(--color-text-faint);
+    font-weight: var(--fw-light);
+  }
+
+  /* Main section */
+  .contact-main {
+    background: var(--color-bg-warm);
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: var(--space-4xl);
+    align-items: start;
+  }
+
+  /* Form */
+  .contact-form-title {
+    font-family: var(--font-heading);
+    font-size: var(--fs-2xl);
+    font-weight: var(--fw-bold);
+    letter-spacing: var(--ls-tight);
+    margin-bottom: var(--space-sm);
+    text-align: left;
+  }
+
+  .contact-form-subtitle {
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-2xl);
+    font-weight: var(--fw-light);
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+  }
+
+  .form-group {
+    margin-bottom: var(--space-lg);
+  }
+
+  .form-label {
+    display: block;
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-semibold);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-wider);
+    margin-bottom: var(--space-sm);
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 0.85rem 1.15rem;
+    font-family: var(--font-body);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-light);
+    color: var(--color-text);
+    background: var(--color-bg-pure);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+    outline: none;
+  }
+
+  .form-input::placeholder {
+    color: var(--color-text-faint);
+  }
+
+  .form-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(27, 67, 50, 0.08);
+  }
+
+  .form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a8a8a' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+    cursor: pointer;
+  }
+
+  .form-textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .btn-full {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* FAQ */
+  .faq-title {
+    font-family: var(--font-heading);
+    font-size: var(--fs-2xl);
+    font-weight: var(--fw-bold);
+    letter-spacing: var(--ls-tight);
+    margin-bottom: var(--space-xl);
+    text-align: left;
+  }
+
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .faq-item {
+    background: var(--color-bg-pure);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: all var(--transition-base);
+  }
+
+  .faq-item[open] {
+    border-color: var(--color-border);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .faq-question {
+    padding: var(--space-lg) var(--space-xl);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semibold);
+    color: var(--color-text);
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    transition: color var(--transition-fast);
+  }
+
+  .faq-question::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-question::after {
+    content: '+';
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-light);
+    color: var(--color-text-faint);
+    flex-shrink: 0;
+    transition: transform var(--transition-base);
+  }
+
+  .faq-item[open] .faq-question::after {
+    transform: rotate(45deg);
+    color: var(--color-primary);
+  }
+
+  .faq-question:hover {
+    color: var(--color-primary);
+  }
+
+  .faq-answer {
+    padding: 0 var(--space-xl) var(--space-lg);
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+    line-height: var(--lh-relaxed);
+    font-weight: var(--fw-light);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .methods-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .contact-grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-3xl);
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  const form = document.getElementById('contactForm');
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const btn = form.querySelector('button[type="submit"]');
+    if (btn) {
+      btn.textContent = 'Mensagem enviada!';
+      btn.setAttribute('disabled', 'true');
+      btn.style.opacity = '0.7';
+    }
+  });
+</script>
