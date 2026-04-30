@@ -1,64 +1,46 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { readData } from '../lib/readData';
 
-const contactMethods = [
-  {
-    icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
-    title: 'E-mail',
-    detail: 'contato@seublog.com.br',
-    description: 'Respondemos em até 24 horas úteis.',
-  },
-  {
-    icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>`,
-    title: 'Instagram',
-    detail: '@seublog',
-    description: 'Dicas rápidas e bastidores dos reviews.',
-  },
-  {
-    icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.43z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="currentColor" stroke="none"/></svg>`,
-    title: 'YouTube',
-    detail: 'SeuBlog Reviews',
-    description: 'Vídeo reviews e unboxings toda semana.',
-  },
-];
-
-const faqs = [
-  {
-    q: 'Vocês testam todos os produtos que recomendam?',
-    a: 'Sim. Cada produto é testado por no mínimo 7 dias antes de publicarmos um review. Em alguns casos, acompanhamos o produto por semanas.',
-  },
-  {
-    q: 'Como vocês ganham dinheiro?',
-    a: 'Através de links de afiliado. Quando você compra um produto pelo nosso link, recebemos uma pequena comissão sem custo adicional para você. Isso nos permite manter o blog 100% gratuito.',
-  },
-  {
-    q: 'Posso sugerir um produto para review?',
-    a: 'Claro! Use o formulário abaixo ou mande um e-mail. Priorizamos produtos mais pedidos pela nossa comunidade.',
-  },
-  {
-    q: 'Vocês fazem parcerias com marcas?',
-    a: 'Fazemos parcerias editoriais com marcas, mas nunca comprometemos nossa opinião. Todo conteúdo patrocinado é claramente identificado.',
-  },
-];
+const contato = readData('contato.json') || {};
+const seo = contato.seo || {};
+const hero = contato.hero || {};
+const contactMethods = contato.methods || [];
+const form = contato.form || {};
+const faqSec = contato.faq || {};
+const faqs = faqSec.items || [];
+const subjects = form.subjects || [];
 ---
 
 <BaseLayout
-  title="Contato"
-  description="Entre em contato com o SeuBlog. Tire dúvidas, sugira produtos para review ou proponha uma parceria."
+  title={seo.title || 'Contato'}
+  description={seo.description || 'Entre em contato com o SeuBlog. Tire dúvidas, sugira produtos para review ou proponha uma parceria.'}
+  image={seo.image || undefined}
 >
+  {/* FAQ Schema */}
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.q,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.a,
+      },
+    })),
+  })} />
+
   <!-- Hero -->
   <section class="contact-hero">
     <div class="contact-hero-bg"></div>
     <div class="container contact-hero-inner">
-      <span class="section-label">Contato</span>
+      <span class="section-label">{hero.label || 'Contato'}</span>
       <h1 class="contact-hero-title">
-        Fale
-        <span class="contact-hero-accent">conosco</span>
+        {hero.title || 'Fale'}
+        <span class="contact-hero-accent">{hero.titleAccent || 'conosco'}</span>
       </h1>
-      <p class="contact-hero-subtitle">
-        Tem uma dúvida, sugestão de produto ou quer propor uma parceria?
-        Adoramos ouvir nossos leitores.
-      </p>
+      <p class="contact-hero-subtitle">{hero.subtitle}</p>
     </div>
   </section>
 
@@ -66,7 +48,7 @@ const faqs = [
   <section class="contact-methods">
     <div class="container">
       <div class="methods-grid stagger-children animate-on-scroll">
-        {contactMethods.map((method) => (
+        {contactMethods.map((method: any) => (
           <div class="method-card">
             <div class="method-icon" set:html={method.icon} />
             <h3 class="method-title">{method.title}</h3>
@@ -84,41 +66,38 @@ const faqs = [
       <div class="contact-grid">
         <!-- Form -->
         <div class="contact-form-wrapper animate-on-scroll">
-          <h2 class="contact-form-title">Envie uma mensagem</h2>
-          <p class="contact-form-subtitle">
-            Preencha o formulário abaixo e retornaremos o mais breve possível.
-          </p>
+          <h2 class="contact-form-title">{form.title || 'Envie uma mensagem'}</h2>
+          <p class="contact-form-subtitle">{form.subtitle}</p>
 
-          <form class="contact-form" id="contactForm">
+          <form class="contact-form" id="contactForm" data-success-text={form.successText || 'Mensagem enviada!'}>
             <div class="form-row">
               <div class="form-group">
-                <label for="name" class="form-label">Nome</label>
-                <input type="text" id="name" name="name" class="form-input" placeholder="Seu nome" required />
+                <label for="name" class="form-label">{form.nameLabel || 'Nome'}</label>
+                <input type="text" id="name" name="name" class="form-input" placeholder={form.namePlaceholder || 'Seu nome'} required />
               </div>
               <div class="form-group">
-                <label for="email" class="form-label">E-mail</label>
-                <input type="email" id="email" name="email" class="form-input" placeholder="seu@email.com" required />
+                <label for="email" class="form-label">{form.emailLabel || 'E-mail'}</label>
+                <input type="email" id="email" name="email" class="form-input" placeholder={form.emailPlaceholder || 'seu@email.com'} required />
               </div>
             </div>
 
             <div class="form-group">
-              <label for="subject" class="form-label">Assunto</label>
+              <label for="subject" class="form-label">{form.subjectLabel || 'Assunto'}</label>
               <select id="subject" name="subject" class="form-input form-select" required>
-                <option value="" disabled selected>Selecione um assunto</option>
-                <option value="sugestao">Sugestão de produto</option>
-                <option value="duvida">Dúvida sobre um review</option>
-                <option value="parceria">Proposta de parceria</option>
-                <option value="outro">Outro</option>
+                <option value="" disabled selected>{form.subjectPlaceholder || 'Selecione um assunto'}</option>
+                {subjects.map((s: any) => (
+                  <option value={s.value}>{s.label}</option>
+                ))}
               </select>
             </div>
 
             <div class="form-group">
-              <label for="message" class="form-label">Mensagem</label>
-              <textarea id="message" name="message" class="form-input form-textarea" placeholder="Sua mensagem..." rows="5" required></textarea>
+              <label for="message" class="form-label">{form.messageLabel || 'Mensagem'}</label>
+              <textarea id="message" name="message" class="form-input form-textarea" placeholder={form.messagePlaceholder || 'Sua mensagem...'} rows="5" required></textarea>
             </div>
 
             <button type="submit" class="btn btn-primary btn-full">
-              Enviar Mensagem
+              {form.submitText || 'Enviar Mensagem'}
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
             </button>
           </form>
@@ -126,9 +105,9 @@ const faqs = [
 
         <!-- FAQ -->
         <div class="contact-faq animate-on-scroll">
-          <h2 class="faq-title">Perguntas Frequentes</h2>
+          <h2 class="faq-title">{faqSec.title || 'Perguntas Frequentes'}</h2>
           <div class="faq-list">
-            {faqs.map((faq) => (
+            {faqs.map((faq: any) => (
               <details class="faq-item">
                 <summary class="faq-question">{faq.q}</summary>
                 <p class="faq-answer">{faq.a}</p>
@@ -432,7 +411,8 @@ const faqs = [
     e.preventDefault();
     const btn = form.querySelector('button[type="submit"]');
     if (btn) {
-      btn.textContent = 'Mensagem enviada!';
+      const successText = form.getAttribute('data-success-text') || 'Mensagem enviada!';
+      btn.textContent = successText;
       btn.setAttribute('disabled', 'true');
       btn.style.opacity = '0.7';
     }

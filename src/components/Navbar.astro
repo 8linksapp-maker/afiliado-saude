@@ -1,10 +1,20 @@
 ---
-const navLinks = [
+import { readData } from '../lib/readData';
+
+const site = readData('siteConfig.json') || {};
+const menu = readData('menu.json') || {};
+const navLinks = (menu.items && menu.items.length > 0) ? menu.items : [
   { href: '/', label: 'Home' },
   { href: '/blog', label: 'Blog' },
   { href: '/sobre', label: 'Sobre' },
   { href: '/contato', label: 'Contato' },
 ];
+
+const siteName = site.name || 'SeuBlog';
+const siteLogo = site.logo || '';
+const logoMark = (site.logoMark || siteName.charAt(0) || 'S').toUpperCase();
+const ctaText = site.ctaText || 'Explorar';
+const ctaHref = site.ctaHref || '/blog';
 
 const currentPath = Astro.url.pathname;
 ---
@@ -12,8 +22,14 @@ const currentPath = Astro.url.pathname;
 <header class="navbar" id="navbar">
   <div class="container navbar-inner">
     <a href="/" class="navbar-logo">
-      <span class="logo-mark">S</span>
-      <span class="logo-text">SeuBlog</span>
+      {siteLogo ? (
+        <img src={siteLogo} alt={siteName} class="logo-image" />
+      ) : (
+        <>
+          <span class="logo-mark">{logoMark}</span>
+          <span class="logo-text">{siteName}</span>
+        </>
+      )}
     </a>
 
     <nav class="navbar-nav" id="navMenu">
@@ -32,7 +48,7 @@ const currentPath = Astro.url.pathname;
     </nav>
 
     <div class="navbar-actions">
-      <a href="/blog" class="btn btn-primary btn-nav">Explorar</a>
+      <a href={ctaHref} class="btn btn-primary btn-nav">{ctaText}</a>
       <button
         class="navbar-toggle"
         id="navToggle"
@@ -107,6 +123,12 @@ const currentPath = Astro.url.pathname;
     font-weight: var(--fw-bold);
     color: var(--color-text);
     letter-spacing: var(--ls-tight);
+  }
+
+  .logo-image {
+    height: 36px;
+    width: auto;
+    display: block;
   }
 
   /* Nav links */

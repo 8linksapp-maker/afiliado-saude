@@ -37,6 +37,9 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
             imageAlt={post.data.imageAlt}
             category={post.data.category}
             slug={post.id}
+            rating={post.data.rating}
+            badge={post.data.badge}
+            priceRange={post.data.priceRange}
           />
         ))}
       </div>

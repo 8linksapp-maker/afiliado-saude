@@ -1,17 +1,20 @@
 ---
 interface Props {
-  title?: string;
-  subtitle?: string;
-  ctaPrimary?: { text: string; href: string };
-  ctaSecondary?: { text: string; href: string };
+  data?: any;
 }
 
-const {
-  title = 'Descubra os Melhores Produtos para Transformar sua Vida',
-  subtitle = 'Reviews honestos, comparativos detalhados e recomendações dos melhores produtos físicos e digitais do mercado.',
-  ctaPrimary = { text: 'Ver Recomendações', href: '/blog' },
-  ctaSecondary = { text: 'Sobre Nós', href: '/#sobre' },
-} = Astro.props;
+const d = Astro.props.data || {};
+const badge = d.badge || 'Blog de Reviews & Recomendações';
+const title = d.title || 'Descubra os Melhores Produtos para Transformar sua Vida';
+const subtitle = d.subtitle || 'Reviews honestos, comparativos detalhados e recomendações dos melhores produtos físicos e digitais do mercado.';
+const ctaPrimary = d.ctaPrimary || { text: 'Ver Recomendações', href: '/blog' };
+const ctaSecondary = d.ctaSecondary || { text: 'Sobre Nós', href: '/sobre' };
+const heroImage = d.image || '/images/hero.jpg';
+const stats = d.stats || [
+  { number: '500+', label: 'Produtos Avaliados' },
+  { number: '50k+', label: 'Leitores Mensais' },
+  { number: '98%', label: 'Satisfação' },
+];
 ---
 
 <section class="hero">
@@ -26,14 +29,10 @@ const {
     <div class="hero-content">
       <div class="hero-badge">
         <span class="hero-badge-dot"></span>
-        Blog de Reviews & Recomendações
+        {badge}
       </div>
 
-      <h1 class="hero-title">
-        <span class="hero-title-line">Descubra os</span>
-        <span class="hero-title-accent">Melhores Produtos</span>
-        <span class="hero-title-line">para Transformar sua Vida</span>
-      </h1>
+      <h1 class="hero-title">{title}</h1>
 
       <p class="hero-subtitle">{subtitle}</p>
 
@@ -50,20 +49,15 @@ const {
       </div>
 
       <div class="hero-stats">
-        <div class="hero-stat">
-          <span class="hero-stat-number">500+</span>
-          <span class="hero-stat-label">Produtos Avaliados</span>
-        </div>
-        <div class="hero-stat-divider"></div>
-        <div class="hero-stat">
-          <span class="hero-stat-number">50k+</span>
-          <span class="hero-stat-label">Leitores Mensais</span>
-        </div>
-        <div class="hero-stat-divider"></div>
-        <div class="hero-stat">
-          <span class="hero-stat-number">98%</span>
-          <span class="hero-stat-label">Satisfação</span>
-        </div>
+        {stats.map((stat: any, i: number) => (
+          <>
+            {i > 0 && <div class="hero-stat-divider"></div>}
+            <div class="hero-stat">
+              <span class="hero-stat-number">{stat.number}</span>
+              <span class="hero-stat-label">{stat.label}</span>
+            </div>
+          </>
+        ))}
       </div>
     </div>
 

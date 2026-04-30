@@ -1,12 +1,13 @@
 ---
-const stats = [
+interface Props { data?: any; }
+const d = Astro.props.data || {};
+const stats = d.stats || [
   { number: '4.9', suffix: '/5', label: 'Avaliação Média', detail: '+200 reviews verificados' },
   { number: '50k', suffix: '+', label: 'Leitores Mensais', detail: 'Crescendo todo mês' },
   { number: '500', suffix: '+', label: 'Produtos Avaliados', detail: 'Reviews detalhados' },
   { number: 'R$2M', suffix: '+', label: 'Economia Gerada', detail: 'Para nossos leitores' },
 ];
-
-const brands = ['Amazon', 'Hotmart', 'Mercado Livre', 'Shopee', 'Eduzz', 'Monetizze'];
+const brands = d.brands || ['Amazon', 'Hotmart', 'Mercado Livre', 'Shopee', 'Eduzz', 'Monetizze'];
 ---
 
 <section class="social-proof">

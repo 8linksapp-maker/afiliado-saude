@@ -1,4 +1,6 @@
 ---
+import RatingStars from './affiliate/RatingStars.astro';
+
 interface Props {
   title: string;
   description: string;
@@ -7,9 +9,12 @@ interface Props {
   imageAlt?: string;
   category: string;
   slug: string;
+  rating?: number;
+  badge?: string;
+  priceRange?: string;
 }
 
-const { title, description, pubDate, image, imageAlt, category, slug } = Astro.props;
+const { title, description, pubDate, image, imageAlt, category, slug, rating, badge, priceRange } = Astro.props;
 
 const categoryLabels: Record<string, string> = {
   'produtos-fisicos': 'Produtos Físicos',
@@ -27,11 +32,19 @@ const categoryColors: Record<string, string> = {
   'comparativos': '#d4a373',
 };
 
+const badgeLabels: Record<string, string> = {
+  'top-pick': 'Top Pick',
+  'best-value': 'Melhor Custo-Benefício',
+  'editor-choice': 'Escolha do Editor',
+};
+
 const formattedDate = pubDate.toLocaleDateString('pt-BR', {
   day: '2-digit',
   month: 'short',
   year: 'numeric',
 });
+
+const ratingOutOf5 = rating ? Math.round((rating / 10) * 5 * 10) / 10 : undefined;
 ---
 
 <article class="post-card animate-on-scroll">
@@ -57,6 +70,11 @@ const formattedDate = pubDate.toLocaleDateString('pt-BR', {
       >
         {categoryLabels[category] || category}
       </span>
+      {badge && (
+        <span class="post-card-badge">
+          {badgeLabels[badge] || badge}
+        </span>
+      )}
     </div>
 
     <div class="post-card-body">
@@ -64,7 +82,11 @@ const formattedDate = pubDate.toLocaleDateString('pt-BR', {
         <time class="post-card-date" datetime={pubDate.toISOString()}>
           {formattedDate}
         </time>
-        <span class="post-card-reading">5 min leitura</span>
+        {ratingOutOf5 && (
+          <span class="post-card-rating">
+            <RatingStars rating={ratingOutOf5} size="sm" />
+          </span>
+        )}
       </div>
 
       <h3 class="post-card-title">{title}</h3>
@@ -77,6 +99,9 @@ const formattedDate = pubDate.toLocaleDateString('pt-BR', {
             <path d="M5 12h14M12 5l7 7-7 7"/>
           </svg>
         </span>
+        {priceRange && (
+          <span class="post-card-price">{priceRange}</span>
+        )}
       </div>
     </div>
   </a>
@@ -106,7 +131,6 @@ const formattedDate = pubDate.toLocaleDateString('pt-BR', {
     height: 100%;
   }
 
-  /* Image */
   .post-card-image {
     position: relative;
     aspect-ratio: 5 / 3;
@@ -167,7 +191,21 @@ const formattedDate = pubDate.toLocaleDateString('pt-BR', {
     letter-spacing: var(--ls-wider);
   }
 
-  /* Body */
+  .post-card-badge {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    padding: 0.3rem 0.75rem;
+    font-size: 0.6rem;
+    font-weight: var(--fw-bold);
+    color: #fff;
+    background: linear-gradient(135deg, var(--color-accent), var(--color-accent-dark));
+    border-radius: var(--radius-full);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-wider);
+    box-shadow: var(--shadow-gold);
+  }
+
   .post-card-body {
     display: flex;
     flex-direction: column;
@@ -180,22 +218,19 @@ const formattedDate = pubDate.toLocaleDateString('pt-BR', {
     align-items: center;
     gap: var(--space-md);
     margin-bottom: var(--space-md);
-  }
-
-  .post-card-date,
-  .post-card-reading {
-    font-size: var(--fs-xs);
-    color: var(--color-text-faint);
+    flex-wrap: wrap;
   }
 
   .post-card-date {
+    font-size: var(--fs-xs);
+    color: var(--color-text-faint);
     text-transform: uppercase;
     letter-spacing: var(--ls-wide);
   }
 
-  .post-card-reading::before {
-    content: '·';
-    margin-right: var(--space-md);
+  .post-card-rating {
+    display: flex;
+    align-items: center;
   }
 
   .post-card-title {
@@ -231,6 +266,9 @@ const formattedDate = pubDate.toLocaleDateString('pt-BR', {
   }
 
   .post-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding-top: var(--space-md);
     border-top: 1px solid var(--color-border-light);
   }
@@ -248,5 +286,15 @@ const formattedDate = pubDate.toLocaleDateString('pt-BR', {
 
   .post-card:hover .post-card-read-more {
     gap: var(--space-md);
+  }
+
+  .post-card-price {
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-semibold);
+    color: var(--color-accent-dark);
+    background: var(--color-accent-surface);
+    padding: 0.2rem 0.65rem;
+    border-radius: var(--radius-full);
+    letter-spacing: var(--ls-wide);
   }
 </style>

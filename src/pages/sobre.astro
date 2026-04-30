@@ -1,38 +1,36 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { readData } from '../lib/readData';
 
-const timeline = [
-  { year: '2022', title: 'O Início', text: 'Começamos como um hobby — testando produtos e compartilhando opiniões honestas com amigos e familiares.' },
-  { year: '2023', title: 'Crescimento', text: 'Alcançamos 10 mil leitores mensais e fechamos parceria com as maiores plataformas de afiliados do Brasil.' },
-  { year: '2024', title: 'Consolidação', text: 'Mais de 500 produtos avaliados, 50 mil leitores mensais e uma comunidade engajada que confia em nossas recomendações.' },
-  { year: '2025', title: 'O Futuro', text: 'Expandindo para vídeo reviews, comparativos interativos e uma newsletter semanal com as melhores ofertas.' },
-];
+const sobre = readData('sobre.json') || {};
+const seo = sobre.seo || {};
+const hero = sobre.hero || {};
+const story = sobre.story || {};
+const values = sobre.values || {};
+const timelineSec = sobre.timeline || {};
+const cta = sobre.cta || {};
 
-const values = [
-  { number: '01', title: 'Honestidade Radical', text: 'Se um produto é ruim, dizemos que é ruim. Não recomendamos nada que não usaríamos nós mesmos. Nosso compromisso é com você, não com as marcas.' },
-  { number: '02', title: 'Transparência Total', text: 'Usamos links de afiliado — e você sempre sabe quando. Essa receita nos permite continuar criando conteúdo gratuito e de qualidade.' },
-  { number: '03', title: 'Rigor nas Análises', text: 'Cada produto é testado por no mínimo 7 dias antes de publicarmos. Pesquisamos especificações, comparamos preços e ouvimos outros consumidores.' },
-  { number: '04', title: 'Foco no Leitor', text: 'Escrevemos para pessoas reais, não para algoritmos. Se um post não ajuda você a tomar uma decisão melhor, ele não merece ser publicado.' },
-];
+const valueItems = values.items || [];
+const timeline = timelineSec.items || [];
+const storyParagraphs = story.paragraphs || [];
+const storyStats = story.stats || [];
 ---
 
 <BaseLayout
-  title="Sobre"
-  description="Conheça a história do SeuBlog, nossa missão e os valores que guiam cada review e recomendação que publicamos."
+  title={seo.title || 'Sobre'}
+  description={seo.description || 'Conheça a história do SeuBlog, nossa missão e os valores que guiam cada review e recomendação que publicamos.'}
+  image={seo.image || undefined}
 >
   <!-- Hero -->
   <section class="about-hero">
     <div class="about-hero-bg"></div>
     <div class="container about-hero-inner">
-      <span class="section-label">Sobre Nós</span>
+      <span class="section-label">{hero.label || 'Sobre Nós'}</span>
       <h1 class="about-hero-title">
-        Ajudamos você a fazer
-        <span class="about-hero-accent">escolhas inteligentes</span>
+        {hero.title || 'Ajudamos você a fazer'}
+        <span class="about-hero-accent">{hero.titleAccent || 'escolhas inteligentes'}</span>
       </h1>
-      <p class="about-hero-subtitle">
-        Somos um blog independente de reviews e recomendações.
-        Nossa missão é simples: testar produtos e contar a verdade sobre eles.
-      </p>
+      <p class="about-hero-subtitle">{hero.subtitle}</p>
     </div>
   </section>
 
@@ -41,44 +39,23 @@ const values = [
     <div class="container">
       <div class="story-grid">
         <div class="story-content animate-on-scroll">
-          <span class="section-label">Nossa História</span>
+          <span class="section-label">{story.label || 'Nossa História'}</span>
           <h2 class="story-title">
-            De curiosidade pessoal a
-            <span class="story-accent">referência em reviews</span>
+            {story.title}
+            <span class="story-accent">{story.titleAccent}</span>
           </h2>
-          <p class="story-text">
-            Tudo começou com uma frustração: comprar um produto caro online e descobrir
-            que não era nada do que prometiam. Depois de jogar dinheiro fora algumas vezes,
-            decidimos criar o conteúdo que gostaríamos de ter encontrado antes.
-          </p>
-          <p class="story-text">
-            Hoje, somos uma equipe apaixonada por tecnologia, casa e bem-estar.
-            Avaliamos produtos físicos das maiores lojas online e produtos digitais das
-            principais plataformas — sempre com a mesma pergunta: <strong>"Eu recomendaria
-            isso para um amigo?"</strong>
-          </p>
-          <p class="story-text">
-            Se a resposta for não, o produto não entra na lista. Simples assim.
-          </p>
+          {storyParagraphs.map((p: string) => (
+            <p class="story-text" set:html={p}></p>
+          ))}
         </div>
 
         <div class="story-stats animate-on-scroll">
-          <div class="story-stat-card">
-            <span class="story-stat-number">500+</span>
-            <span class="story-stat-label">Produtos avaliados</span>
-          </div>
-          <div class="story-stat-card">
-            <span class="story-stat-number">50k+</span>
-            <span class="story-stat-label">Leitores mensais</span>
-          </div>
-          <div class="story-stat-card">
-            <span class="story-stat-number">4.9</span>
-            <span class="story-stat-label">Avaliação média</span>
-          </div>
-          <div class="story-stat-card">
-            <span class="story-stat-number">3 anos</span>
-            <span class="story-stat-label">De conteúdo</span>
-          </div>
+          {storyStats.map((s: any) => (
+            <div class="story-stat-card">
+              <span class="story-stat-number">{s.number}</span>
+              <span class="story-stat-label">{s.label}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -88,15 +65,13 @@ const values = [
   <section class="about-values section">
     <div class="container">
       <div class="section-header animate-on-scroll">
-        <span class="section-label">Nossos Valores</span>
-        <h2 class="section-title">O que nos guia</h2>
-        <p class="section-subtitle">
-          Cada review que publicamos segue esses princípios inegociáveis.
-        </p>
+        <span class="section-label">{values.label || 'Nossos Valores'}</span>
+        <h2 class="section-title">{values.title || 'O que nos guia'}</h2>
+        <p class="section-subtitle">{values.subtitle}</p>
       </div>
 
       <div class="values-grid stagger-children animate-on-scroll">
-        {values.map((value) => (
+        {valueItems.map((value: any) => (
           <div class="value-card">
             <span class="value-number">{value.number}</span>
             <h3 class="value-title">{value.title}</h3>
@@ -111,12 +86,12 @@ const values = [
   <section class="about-timeline section">
     <div class="container">
       <div class="section-header animate-on-scroll">
-        <span class="section-label">Linha do Tempo</span>
-        <h2 class="section-title">Nossa jornada</h2>
+        <span class="section-label">{timelineSec.label || 'Linha do Tempo'}</span>
+        <h2 class="section-title">{timelineSec.title || 'Nossa jornada'}</h2>
       </div>
 
       <div class="timeline stagger-children animate-on-scroll">
-        {timeline.map((item) => (
+        {timeline.map((item: any) => (
           <div class="timeline-item">
             <div class="timeline-marker">
               <span class="timeline-year">{item.year}</span>
@@ -135,18 +110,16 @@ const values = [
   <section class="about-cta section">
     <div class="container about-cta-inner animate-on-scroll">
       <h2 class="about-cta-title">
-        Pronto para descobrir os
-        <span class="about-cta-accent">melhores produtos?</span>
+        {cta.title || 'Pronto para descobrir os'}
+        <span class="about-cta-accent">{cta.titleAccent || 'melhores produtos?'}</span>
       </h2>
-      <p class="about-cta-text">
-        Explore nosso blog e encontre reviews honestos para sua próxima compra.
-      </p>
+      <p class="about-cta-text">{cta.text}</p>
       <div class="about-cta-actions">
-        <a href="/blog" class="btn btn-primary">
-          Ver Blog
+        <a href={(cta.ctaPrimary && cta.ctaPrimary.href) || '/blog'} class="btn btn-primary">
+          {(cta.ctaPrimary && cta.ctaPrimary.text) || 'Ver Blog'}
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
-        <a href="/contato" class="btn btn-outline">Fale Conosco</a>
+        <a href={(cta.ctaSecondary && cta.ctaSecondary.href) || '/contato'} class="btn btn-outline">{(cta.ctaSecondary && cta.ctaSecondary.text) || 'Fale Conosco'}</a>
       </div>
     </div>
   </section>
