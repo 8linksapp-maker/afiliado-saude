@@ -1,23 +1,16 @@
 import type { APIRoute } from 'astro';
-import fs from 'node:fs/promises';
-import nodePath from 'node:path';
-import { fileURLToPath } from 'node:url';
+import siteConfigData from '../../../data/siteConfig.json';
 
 export const prerender = false;
-
-const PROJECT_ROOT = nodePath.resolve(fileURLToPath(import.meta.url), '../../../../../');
 
 async function getOpenAIConfig(): Promise<{ apiKey: string; model: string }> {
     const envKey = import.meta.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY;
     let apiKey = envKey || '';
     let model = 'gpt-4o-mini';
 
-    try {
-        const raw = await fs.readFile(nodePath.join(PROJECT_ROOT, 'src/data/siteConfig.json'), 'utf-8');
-        const cfg = JSON.parse(raw);
-        if (!apiKey && cfg.ai?.openaiKey) apiKey = cfg.ai.openaiKey;
-        if (cfg.ai?.model) model = cfg.ai.model;
-    } catch { }
+    const cfg: any = siteConfigData;
+    if (!apiKey && cfg?.ai?.openaiKey) apiKey = cfg.ai.openaiKey;
+    if (cfg?.ai?.model) model = cfg.ai.model;
 
     return { apiKey, model };
 }

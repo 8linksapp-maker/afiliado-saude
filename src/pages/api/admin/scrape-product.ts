@@ -67,9 +67,12 @@ function scrapeShopee(html: string) {
 
 function detectStore(url: string): 'amazon' | 'mercado-livre' | 'shopee' | 'outro' {
     const h = url.toLowerCase();
-    if (h.includes('amazon.')) return 'amazon';
-    if (h.includes('mercadolivre.') || h.includes('mercadolibre.')) return 'mercado-livre';
-    if (h.includes('shopee.')) return 'shopee';
+    // Amazon (incluindo shorteners oficiais amzn.to e a.co)
+    if (h.includes('amazon.') || h.includes('amzn.to') || /\/\/a\.co\//.test(h)) return 'amazon';
+    // Mercado Livre (incluindo shortener mercadolivr.es e mlb.la)
+    if (h.includes('mercadolivre.') || h.includes('mercadolibre.') || h.includes('mercadolivr.es') || h.includes('mlb.la')) return 'mercado-livre';
+    // Shopee (incluindo shortener shp.ee e s.shopee.com)
+    if (h.includes('shopee.') || h.includes('shp.ee')) return 'shopee';
     return 'outro';
 }
 
@@ -80,7 +83,7 @@ export const POST: APIRoute = async ({ request }) => {
             return new Response(JSON.stringify({ error: 'URL inválida' }), { status: 400 });
         }
 
-        const store = detectStore(url);
+        let store = detectStore(url);
         if (store === 'outro') {
             return new Response(JSON.stringify({ error: 'Loja não suportada. Use Amazon, Mercado Livre ou Shopee.' }), { status: 400 });
         }
@@ -99,6 +102,10 @@ export const POST: APIRoute = async ({ request }) => {
         if (!res.ok) {
             return new Response(JSON.stringify({ error: `Falha ao acessar página (HTTP ${res.status}). A loja pode estar bloqueando o servidor.` }), { status: 502 });
         }
+
+        // Re-detect via URL final (apos redirects) para garantir que o scraper certo seja usado
+        const finalStore = detectStore(res.url || url);
+        if (finalStore !== 'outro') store = finalStore;
 
         const html = await res.text();
 
