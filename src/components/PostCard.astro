@@ -1,5 +1,6 @@
 ---
 import RatingStars from './affiliate/RatingStars.astro';
+import { postUrl } from '../lib/postUrl';
 
 interface Props {
   title: string;
@@ -15,6 +16,7 @@ interface Props {
 }
 
 const { title, description, pubDate, image, imageAlt, category, slug, rating, badge, priceRange } = Astro.props;
+const href = postUrl(slug);
 
 const categoryLabels: Record<string, string> = {
   'produtos-fisicos': 'Produtos Físicos',
@@ -48,7 +50,7 @@ const ratingOutOf5 = rating ? Math.round((rating / 10) * 5 * 10) / 10 : undefine
 ---
 
 <article class="post-card animate-on-scroll">
-  <a href={`/blog/${slug}`} class="post-card-link">
+  <a href={href} class="post-card-link">
     <div class="post-card-image">
       {image ? (
         <img src={image} alt={imageAlt || title} loading="lazy" />

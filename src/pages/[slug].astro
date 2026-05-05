@@ -1,24 +1,27 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection, render } from 'astro:content';
-import AffiliateDisclosure from '../../components/affiliate/AffiliateDisclosure.astro';
-import ComparisonTable from '../../components/affiliate/ComparisonTable.astro';
-import StickyProductSidebar from '../../components/affiliate/StickyProductSidebar.astro';
-import ProductReviewCard from '../../components/affiliate/ProductReviewCard.astro';
-import TableOfContents from '../../components/TableOfContents.astro';
-import RelatedPosts from '../../components/RelatedPosts.astro';
-import AffiliateProducts from '../../plugins/affiliates/AffiliateProducts.astro';
+import AffiliateDisclosure from '../components/affiliate/AffiliateDisclosure.astro';
+import ComparisonTable from '../components/affiliate/ComparisonTable.astro';
+import StickyProductSidebar from '../components/affiliate/StickyProductSidebar.astro';
+import ProductReviewCard from '../components/affiliate/ProductReviewCard.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import RelatedPosts from '../components/RelatedPosts.astro';
+import AffiliateProducts from '../plugins/affiliates/AffiliateProducts.astro';
 
 export async function getStaticPaths() {
-  const { readData } = await import('../../lib/readData');
-  const siteConfig = readData<any>('siteConfig.json', {});
-  // Em modo URL limpa (postUrlPrefix !== 'blog'), nada a emitir aqui — quem responde é /[slug]
-  if (siteConfig.postUrlPrefix !== 'blog') return [];
+  const RESERVED = new Set(['blog', 'sobre', 'contato', 'categoria', 'admin', 'login', 'registrar', 'politica-privacidade', 'termos', 'configuracoes']);
+  const { readData } = await import('../lib/readData');
+  const siteConfig = readData('siteConfig.json', {});
+  // Em modo URL-com-prefix ('blog'), nada a emitir aqui — quem responde é /blog/[slug]
+  if (siteConfig.postUrlPrefix === 'blog') return [];
   const posts = await getCollection('blog');
-  return posts.map((post) => ({
-    params: { slug: post.id },
-    props: { post },
-  }));
+  return posts
+    .filter(p => !p.data.draft && !RESERVED.has(p.id))
+    .map((post) => ({
+      params: { slug: post.id },
+      props: { post },
+    }));
 }
 
 const { post } = Astro.props;

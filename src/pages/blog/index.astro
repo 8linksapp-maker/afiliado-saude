@@ -27,7 +27,7 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
 
   <section class="blog-posts section">
     <div class="container">
-      <div class="blog-grid stagger-children animate-on-scroll">
+      <div class="blog-grid">
         {posts.map((post) => (
           <PostCard
             title={post.data.title}
@@ -83,6 +83,12 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: var(--space-xl);
+  }
+
+  /* Listagem é o conteúdo principal — cards visíveis de imediato, sem esperar scroll */
+  .blog-grid :global(.post-card) {
+    opacity: 1;
+    animation: none;
   }
 
   @media (max-width: 1024px) {
