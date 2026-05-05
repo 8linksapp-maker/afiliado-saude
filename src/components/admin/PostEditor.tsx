@@ -3,6 +3,7 @@ import { Save, AlertCircle, Loader2, ArrowLeft, Image as ImageIcon, Eye, Edit3 }
 import { marked } from 'marked';
 import { triggerToast } from './CmsToaster';
 import { githubApi } from '../../lib/adminApi';
+import { yamlEscape } from '../../lib/yamlEscape';
 import SEOScoreWidget from '../../plugins/seo/SEOScoreWidget';
 
 interface PostEditorProps {
@@ -128,7 +129,7 @@ export default function PostEditor({ filePath }: PostEditorProps) {
             }
             const cleanedContent = post.content.replace(/&nbsp;/g, ' ').replace(/\u00A0/g, ' ');
             const finalHtmlContent = await extractAndUploadInlineImages(cleanedContent);
-            const markdown = `---\ntitle: "${post.title.replace(/"/g, '\\"')}"\ndescription: "${post.description.replace(/"/g, '\\"')}"\npubDate: "${post.pubDate}"\nimage: "${finalHeroImage}"\ncategory: "${post.category}"\nauthor: "${post.author}"\ndraft: ${post.draft}\n---\n${finalHtmlContent}`;
+            const markdown = `---\ntitle: "${yamlEscape(post.title)}"\ndescription: "${yamlEscape(post.description)}"\npubDate: "${post.pubDate}"\nimage: "${yamlEscape(finalHeroImage)}"\ncategory: "${yamlEscape(post.category)}"\nauthor: "${yamlEscape(post.author)}"\ndraft: ${post.draft}\n---\n${finalHtmlContent}`;
             const targetPath = `src/content/blog/${post.slug}.md`;
             const res = await githubApi('write', targetPath, { content: markdown, sha: fileSha || undefined, message: `CMS: ${isEditing ? 'Edição' : 'Criação'} do artigo ${post.slug}` });
             if (res.sha) setFileSha(res.sha);
