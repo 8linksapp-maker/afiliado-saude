@@ -29,6 +29,18 @@ export default function ConfigEditor() {
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
+        // Guarda: blob: URLs são previews temporários e nunca devem ir pro JSON.
+        // Se chegou aqui com blob URL no logo/favicon mas sem pendingFile correspondente, aborta.
+        if (config?.logo?.startsWith?.('blob:') && !pendingLogo) {
+            setError('Selecione novamente o arquivo do logo antes de salvar.');
+            triggerToast('Selecione novamente o arquivo do logo', 'error');
+            return;
+        }
+        if (config?.favicon?.startsWith?.('blob:') && !pendingFavicon) {
+            setError('Selecione novamente o arquivo do favicon antes de salvar.');
+            triggerToast('Selecione novamente o arquivo do favicon', 'error');
+            return;
+        }
         setSaving(true); setError('');
         triggerToast('Sincronizando configurações...', 'progress', 20);
         try {
@@ -55,7 +67,9 @@ export default function ConfigEditor() {
                 configCopy.favicon = `/favicon.${fileExt}`;
             }
             const res = await githubApi('write', 'src/data/siteConfig.json', { content: JSON.stringify(configCopy, null, 2), sha: fileSha, message: 'CMS: Update siteConfig.json' });
-            setFileSha(res.sha); setPendingLogo(null); setPendingFavicon(null);
+            setFileSha(res.sha);
+            setConfig(configCopy);
+            setPendingLogo(null); setPendingFavicon(null);
             triggerToast('Configurações salvas com sucesso!', 'success', 100);
         } catch (err: any) {
             setError(err.message); triggerToast(`Erro: ${err.message}`, 'error');
