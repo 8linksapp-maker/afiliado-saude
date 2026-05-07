@@ -9,6 +9,8 @@ const currentYear = new Date().getFullYear();
 const siteName = site.name || 'SeuBlog';
 const siteLogo = site.logo || '';
 const logoMark = (site.logoMark || siteName.charAt(0) || 'S').toUpperCase();
+const showFooterLogo = site.showFooterLogo !== false;
+const footerLogoSize = Math.max(20, Math.min(160, Number(site.footerLogoSize) || 48));
 
 const cta = footer.cta || { title: 'Não perca nenhuma', titleAccent: 'recomendação', text: 'Acompanhe nosso blog.' };
 const about = footer.about || '';
@@ -36,16 +38,18 @@ const disclaimer = footer.disclaimer || '';
       <div class="footer-grid">
         <!-- Column 1: About -->
         <div class="footer-col footer-col-about">
-          <a href="/" class="footer-logo">
-            {siteLogo ? (
-              <img src={siteLogo} alt={siteName} class="footer-logo-image" />
-            ) : (
-              <>
-                <span class="footer-logo-mark">{logoMark}</span>
-                <span class="footer-logo-text">{siteName}</span>
-              </>
-            )}
-          </a>
+          {showFooterLogo && (
+            <a href="/" class="footer-logo">
+              {siteLogo ? (
+                <img src={siteLogo} alt={siteName} class="footer-logo-image" style={`max-height: ${footerLogoSize}px;`} />
+              ) : (
+                <>
+                  <span class="footer-logo-mark">{logoMark}</span>
+                  <span class="footer-logo-text">{siteName}</span>
+                </>
+              )}
+            </a>
+          )}
           <p class="footer-about">{about}</p>
           <div class="footer-social">
             {social.map((s: any) => (

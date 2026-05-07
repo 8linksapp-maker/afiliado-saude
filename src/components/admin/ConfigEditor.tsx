@@ -141,6 +141,18 @@ export default function ConfigEditor() {
                                     {config?.logo ? 'Trocar Logo' : 'Enviar Logo (PNG/SVG)'}
                                 </span>
                             </label>
+                            <div className="mt-3">
+                                <label className="flex items-center justify-between text-xs font-bold text-slate-500 mb-1">
+                                    <span>Tamanho no Header</span>
+                                    <span className="text-violet-600">{config?.logoSize || 40}px</span>
+                                </label>
+                                <input
+                                    type="range" min="20" max="120" step="2"
+                                    value={config?.logoSize || 40}
+                                    onChange={e => setConfig({ ...config, logoSize: Number(e.target.value) })}
+                                    className="w-full accent-violet-600"
+                                />
+                            </div>
                         </div>
                         <div className="w-full sm:w-1/3">
                             <label className={labelClass}>Favicon</label>
@@ -293,6 +305,35 @@ export default function ConfigEditor() {
             <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
                 <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">Rodape (Footer)</h3>
                 <div className="space-y-4">
+                    <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                        <div>
+                            <label className="text-sm font-bold text-slate-700">Mostrar logo no rodapé</label>
+                            <p className="text-xs text-slate-500 mt-0.5">Desligue se quiser o footer sem logo</p>
+                        </div>
+                        <button
+                            type="button"
+                            role="switch"
+                            aria-checked={config?.showFooterLogo !== false}
+                            onClick={() => setConfig({ ...config, showFooterLogo: config?.showFooterLogo === false })}
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${config?.showFooterLogo !== false ? 'bg-violet-600' : 'bg-slate-300'}`}
+                        >
+                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${config?.showFooterLogo !== false ? 'translate-x-6' : 'translate-x-1'}`} />
+                        </button>
+                    </div>
+                    {config?.showFooterLogo !== false && (
+                        <div>
+                            <label className="flex items-center justify-between text-xs font-bold text-slate-500 mb-1">
+                                <span>Tamanho do logo no rodapé</span>
+                                <span className="text-violet-600">{config?.footerLogoSize || 48}px</span>
+                            </label>
+                            <input
+                                type="range" min="20" max="160" step="2"
+                                value={config?.footerLogoSize || 48}
+                                onChange={e => setConfig({ ...config, footerLogoSize: Number(e.target.value) })}
+                                className="w-full accent-violet-600"
+                            />
+                        </div>
+                    )}
                     <div><label className={labelClass}>Descricao do Footer</label><textarea rows={3} placeholder="Texto que aparece no rodape do site" value={config?.footer?.description || ''} onChange={e => setConfig({ ...config, footer: { ...config.footer, description: e.target.value } })} className={`${inputClass} resize-y`} /></div>
                     <div><label className={labelClass}>Texto de Copyright</label><input type="text" placeholder="Nome da empresa ou site" value={config?.footer?.copyright || ''} onChange={e => setConfig({ ...config, footer: { ...config.footer, copyright: e.target.value } })} className={inputClass} /></div>
                 </div>
