@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Loader2, AlertCircle, Plus, Trash2, Zap, Star, BarChart3, Users, ChevronDown, ChevronUp } from 'lucide-react';
+import { Save, Loader2, AlertCircle, Plus, Trash2, Zap, Star, BarChart3, Users, ChevronDown, ChevronUp, ImageIcon } from 'lucide-react';
 import { triggerToast } from './CmsToaster';
 import { githubApi } from '../../lib/adminApi';
+
+const fileToBase64 = (file: File): Promise<string> => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve((reader.result as string).split(',')[1]);
+    reader.onerror = e => reject(e);
+    reader.readAsDataURL(file);
+});
 
 type Stat = { number: string; suffix?: string; label: string; detail?: string };
 type HeroStat = { number: string; label: string };
@@ -67,6 +74,7 @@ export default function HomeEditor() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
+    const [pendingHeroImage, setPendingHeroImage] = useState<File | null>(null);
 
     useEffect(() => {
         githubApi('read', 'src/data/home.json')
@@ -80,8 +88,19 @@ export default function HomeEditor() {
         setSaving(true); setError('');
         triggerToast('Salvando configurações da home...', 'progress', 20);
         try {
+            let configToSave = config;
+            if (pendingHeroImage) {
+                triggerToast('Enviando imagem do hero...', 'progress', 50);
+                const ext = (pendingHeroImage.name.split('.').pop() || 'jpg').toLowerCase();
+                const ghPath = `public/uploads/${Date.now()}-hero.${ext}`;
+                const base64 = await fileToBase64(pendingHeroImage);
+                await githubApi('write', ghPath, { content: base64, isBase64: true, message: 'CMS: Upload Hero Image' });
+                configToSave = { ...config, hero: { ...config.hero, image: ghPath.replace('public', '') } };
+                setConfig(configToSave);
+                setPendingHeroImage(null);
+            }
             const data = await githubApi('write', 'src/data/home.json', {
-                content: JSON.stringify(config, null, 2), sha: fileSha || undefined, message: 'CMS: Update home.json'
+                content: JSON.stringify(configToSave, null, 2), sha: fileSha || undefined, message: 'CMS: Update home.json'
             });
             setFileSha(data.sha);
             triggerToast('Home atualizada com sucesso!', 'success', 100);
@@ -136,7 +155,29 @@ export default function HomeEditor() {
                     </div>
                     <div>
                         <label className={labelClass}>Imagem do Hero</label>
-                        <input className={inputClass} value={config.hero.image} onChange={e => set('hero.image', e.target.value)} placeholder="/images/hero.jpg" />
+                        <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                            <label className="group relative border-2 border-dashed border-slate-300 hover:border-violet-500 bg-slate-50 hover:bg-violet-50/50 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-all text-center sm:w-48 h-32 overflow-hidden">
+                                <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                        setPendingHeroImage(file);
+                                        set('hero.image', URL.createObjectURL(file));
+                                    }
+                                }} />
+                                {config.hero.image ? (
+                                    <img src={config.hero.image} alt="Hero" className="absolute inset-0 w-full h-full object-cover" />
+                                ) : (
+                                    <>
+                                        <ImageIcon className="w-7 h-7 text-slate-400 group-hover:text-violet-500 transition-colors mb-1" />
+                                        <span className="text-xs font-bold text-slate-500">Subir imagem</span>
+                                    </>
+                                )}
+                            </label>
+                            <div className="flex-1">
+                                <input className={inputClass} value={pendingHeroImage ? '(arquivo selecionado — salvar para enviar)' : config.hero.image} onChange={e => set('hero.image', e.target.value)} placeholder="/images/hero.jpg ou URL externa" disabled={!!pendingHeroImage} />
+                                <p className="text-[10px] text-slate-400 mt-1">Suba uma imagem do PC ou cole o caminho/URL</p>
+                            </div>
+                        </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
