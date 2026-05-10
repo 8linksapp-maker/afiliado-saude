@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import { readData } from '../lib/readData';
 
 interface Product {
   name: string;
@@ -18,7 +19,7 @@ interface Breadcrumb {
 
 interface Props {
   title: string;
-  description: string;
+  description?: string;
   image?: string;
   canonicalURL?: string;
   type?: 'website' | 'article';
@@ -30,22 +31,32 @@ interface Props {
   breadcrumbs?: Breadcrumb[];
 }
 
+const cfg = readData<any>('siteConfig.json') || {};
+const siteName = cfg.name || 'SeuBlog';
+const siteDescription = cfg.description || 'Reviews honestos e recomendações dos melhores produtos.';
+const siteAuthor = cfg.author || siteName;
+const favicon = cfg.favicon || '/favicon.svg';
+const faviconType = favicon.endsWith('.svg')
+  ? 'image/svg+xml'
+  : favicon.endsWith('.png') ? 'image/png'
+  : favicon.endsWith('.ico') ? 'image/x-icon'
+  : 'image/x-icon';
+
 const {
   title,
-  description,
+  description = siteDescription,
   image = '/images/og-default.jpg',
   canonicalURL = Astro.url.href,
   type = 'website',
   pubDate,
   updatedDate,
-  author = 'SeuBlog',
+  author = siteAuthor,
   rating,
   products = [],
   breadcrumbs = [],
 } = Astro.props;
 
-const siteName = 'Seu Blog';
-const fullTitle = `${title} | ${siteName}`;
+const fullTitle = title === siteName ? siteName : `${title} | ${siteName}`;
 
 // Build JSON-LD
 const mainSchema: Record<string, unknown> = {
@@ -155,7 +166,7 @@ const breadcrumbSchema = breadcrumbs.length > 0 ? {
     <meta name="twitter:image" content={new URL(image, Astro.site)} />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type={faviconType} href={favicon} />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
     <!-- Fonts — Instrument Serif (display) + Outfit (body) -->
