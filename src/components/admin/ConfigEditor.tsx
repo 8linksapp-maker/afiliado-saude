@@ -93,6 +93,15 @@ export default function ConfigEditor() {
     const inputClass = "w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all shadow-sm text-slate-800 font-medium";
     const labelClass = "block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1";
 
+    const presetThemes = [
+        { name: 'Floresta',      primary: '#1b4332', accent: '#c9a227', dark: '#1E293B' },
+        { name: 'Oceano',        primary: '#2196F3', accent: '#64B5F6', dark: '#0D2137' },
+        { name: 'Sunset',        primary: '#FF5722', accent: '#FFAB91', dark: '#4A1A0A' },
+        { name: 'Roxo Elegante', primary: '#7C3AED', accent: '#A78BFA', dark: '#2D1060' },
+        { name: 'Dourado',       primary: '#D4A017', accent: '#F0D060', dark: '#3D2A00' },
+        { name: 'Rosa Original', primary: '#FE4F70', accent: '#FFA387', dark: '#203656' },
+    ];
+
     return (
         <form onSubmit={handleSave} className="space-y-8 pb-32 max-w-3xl">
             {/* Action Bar */}
@@ -173,6 +182,74 @@ export default function ConfigEditor() {
                             <label className={labelClass}>Descrição do Site</label>
                             <textarea rows={2} placeholder="Breve descrição que aparece no widget 'Sobre' da sidebar do blog" value={config?.description || ''} onChange={e => setConfig({ ...config, description: e.target.value })} className={`${inputClass} resize-y`} />
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Identidade Visual — Cores e Fontes */}
+            <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
+                <h3 className="text-xl font-bold text-slate-900 mb-2 border-b border-slate-100 pb-4">Identidade Visual</h3>
+                <p className="text-sm text-slate-500 mb-6 -mt-2">Cores e fontes aplicadas no site inteiro.</p>
+
+                <div className="space-y-6">
+                    <div>
+                        <label className={labelClass}>Temas Prontos</label>
+                        <div className="flex flex-wrap gap-2">
+                            {presetThemes.map(preset => (
+                                <button
+                                    key={preset.name}
+                                    type="button"
+                                    onClick={() => setConfig({ ...config, theme: { ...config.theme, primary: preset.primary, accent: preset.accent, dark: preset.dark } })}
+                                    className="flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl hover:border-violet-400 hover:bg-violet-50 transition-all text-sm font-semibold text-slate-700"
+                                >
+                                    <span className="w-4 h-4 rounded-full border border-white shadow-sm" style={{ background: preset.primary }} />
+                                    <span className="w-4 h-4 rounded-full border border-white shadow-sm" style={{ background: preset.accent }} />
+                                    {preset.name}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        {[
+                            { key: 'primary', label: 'Cor Primária' },
+                            { key: 'accent', label: 'Cor de Destaque' },
+                            { key: 'dark', label: 'Cor Escura (header/footer)' },
+                        ].map(f => (
+                            <div key={f.key}>
+                                <label className={labelClass}>{f.label}</label>
+                                <div className="flex gap-4 p-2 bg-slate-50 border border-slate-200 rounded-xl">
+                                    <input type="color" value={config?.theme?.[f.key] || '#000000'} onChange={e => setConfig({ ...config, theme: { ...config.theme, [f.key]: e.target.value } })} className="h-10 w-16 p-0 border-0 rounded-lg cursor-pointer bg-transparent" />
+                                    <input type="text" value={config?.theme?.[f.key] || ''} onChange={e => setConfig({ ...config, theme: { ...config.theme, [f.key]: e.target.value } })} className="flex-1 bg-transparent border-none focus:outline-none font-mono text-slate-700 font-bold" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {(config?.theme?.primary || config?.theme?.accent) && (
+                        <div>
+                            <label className={labelClass}>Preview</label>
+                            <div
+                                className="h-14 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-sm"
+                                style={{ background: `linear-gradient(to right, ${config?.theme?.primary || '#1b4332'} 0%, ${config?.theme?.accent || '#c9a227'} 100%)` }}
+                            >
+                                Botões · Destaques · Categorias
+                            </div>
+                        </div>
+                    )}
+
+                    <div>
+                        <label className={labelClass}>Combinação de Fontes</label>
+                        <select value={config?.theme?.font || 'instrument'} onChange={e => setConfig({ ...config, theme: { ...config.theme, font: e.target.value } })} className={inputClass}>
+                            <option value="instrument">Instrument Serif & Outfit (Padrão / Elegante)</option>
+                            <option value="inter">Inter & Roboto Mono (Moderno / Tech)</option>
+                            <option value="outfit">Outfit & Inter (Clean / SaaS)</option>
+                            <option value="roboto">Roboto & Open Sans (Corporativo / Neutro)</option>
+                            <option value="poppins">Poppins & Lora (Criativo / Boutique)</option>
+                            <option value="montserrat">Montserrat & Merriweather (Profissional / Textual)</option>
+                            <option value="playfair">Playfair Display & Source Sans (Editorial)</option>
+                            <option value="lora">Lora & Merriweather (Revista / Narrativa)</option>
+                        </select>
                     </div>
                 </div>
             </div>

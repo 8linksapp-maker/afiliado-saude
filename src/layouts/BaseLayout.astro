@@ -42,6 +42,22 @@ const faviconType = favicon.endsWith('.svg')
   : favicon.endsWith('.ico') ? 'image/x-icon'
   : 'image/x-icon';
 
+// Theme (cores e fontes editáveis em /admin/config)
+const fontMap: Record<string, { heading: string; body: string; url: string }> = {
+  instrument: { heading: 'Instrument Serif', body: 'Outfit',        url: 'family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700;800' },
+  inter:      { heading: 'Inter',            body: 'Roboto Mono',   url: 'family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500' },
+  outfit:     { heading: 'Outfit',           body: 'Inter',         url: 'family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500' },
+  roboto:     { heading: 'Roboto',           body: 'Open Sans',     url: 'family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600' },
+  poppins:    { heading: 'Poppins',          body: 'Lora',          url: 'family=Poppins:wght@400;500;600;700&family=Lora:wght@400;500' },
+  montserrat: { heading: 'Montserrat',       body: 'Merriweather',  url: 'family=Montserrat:wght@400;500;600;700&family=Merriweather:wght@400;700' },
+  playfair:   { heading: 'Playfair Display', body: 'Source Sans 3', url: 'family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@400;600' },
+  lora:       { heading: 'Lora',             body: 'Merriweather',  url: 'family=Lora:wght@400;500;600;700&family=Merriweather:wght@400;700' },
+};
+const selectedFont = fontMap[cfg.theme?.font || 'instrument'] || fontMap.instrument;
+const themePrimary = cfg.theme?.primary || '#1b4332';
+const themeAccent  = cfg.theme?.accent  || '#c9a227';
+const themeDark    = cfg.theme?.dark    || '#1E293B';
+
 const {
   title,
   description = siteDescription,
@@ -169,13 +185,22 @@ const breadcrumbSchema = breadcrumbs.length > 0 ? {
     <link rel="icon" type={faviconType} href={favicon} />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
-    <!-- Fonts — Instrument Serif (display) + Outfit (body) -->
+    <!-- Fonts — dinâmico via siteConfig.theme.font -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
+    <link href={`https://fonts.googleapis.com/css2?${selectedFont.url}&display=swap`} rel="stylesheet" />
+
+    <!-- Theme: cores e fontes vindas de siteConfig.theme (admin/config) -->
+    <Fragment set:html={`<style>
+      :root {
+        --color-primary: ${themePrimary};
+        --color-accent: ${themeAccent};
+        --color-dark: ${themeDark};
+        --font-heading: "${selectedFont.heading}", serif;
+        --font-display: "${selectedFont.heading}", serif;
+        --font-body: "${selectedFont.body}", sans-serif;
+      }
+    </style>`} />
 
     <!-- RSS -->
     <link
