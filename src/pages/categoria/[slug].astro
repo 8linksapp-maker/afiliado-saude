@@ -1,0 +1,167 @@
+---
+/**
+ * Página de listagem por categoria
+ *
+ * URL: /categoria/{slug}
+ * Lê categories.json (suporta os dois schemas: array de strings ou array de
+ * objetos {name, slug, description}) e gera uma página por categoria.
+ * Filtra posts cujo `data.category` casa com o nome OU o slug.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { readData } from '../../lib/readData';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  // IMPORTANTE: Astro avalia getStaticPaths em isolamento — funções externas
+  // ao escopo da função não são visíveis. Por isso slugify fica dentro.
+  const slugify = (s: string) => String(s).toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+
+  const raw = readData('categories.json', []);
+  const list = Array.isArray(raw) ? raw : [];
+  const cats = list.map((c: any) => {
+    if (typeof c === 'string') {
+      return { name: c, slug: slugify(c), description: '' };
+    }
+    const name = c?.name || '';
+    return {
+      name,
+      slug: c?.slug || slugify(name),
+      description: c?.description || '',
+    };
+  }).filter((c: any) => c.name);
+
+  const posts = await getCollection('blog');
+  const existingSlugs = new Set(cats.map((c: any) => c.slug));
+  const orphanNames = new Set<string>();
+  for (const p of posts) {
+    const v = (p.data as any)?.category;
+    if (!v) continue;
+    const s = slugify(v);
+    if (s && !existingSlugs.has(s)) orphanNames.add(v);
+  }
+  for (const v of orphanNames) {
+    cats.push({ name: v, slug: slugify(v), description: '' });
+  }
+
+  return cats.map((c: any) => ({
+    params: { slug: c.slug },
+    props: { name: c.name, description: c.description, slug: c.slug },
+  }));
+}
+
+const slugify = (s: string) => String(s).toLowerCase()
+  .normalize('NFD').replace(/[̀-ͯ]/g, '')
+  .replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+
+const { name, description, slug } = Astro.props as { name: string; description: string; slug: string };
+
+const allPosts = (await getCollection('blog', ({ data }: any) => !data.draft))
+  .sort((a: any, b: any) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+// Match flexível: aceita `category: "Nome Original"` OU `category: "slug-derivado"`
+const posts = allPosts.filter((p: any) => {
+  const v = (p.data?.category || '') as string;
+  if (!v) return false;
+  return v === name || v === slug || slugify(v) === slug;
+});
+
+const metaTitle = `${name} — Artigos`;
+const metaDesc = description || `Todos os artigos sobre ${name}.`;
+---
+
+<BaseLayout title={metaTitle} description={metaDesc}>
+  <section class="cat-hero">
+    <div class="cat-hero-bg"></div>
+    <div class="container cat-hero-inner">
+      <span class="section-label">Categoria</span>
+      <h1 class="cat-hero-title">{name}</h1>
+      {description && <p class="section-subtitle cat-hero-desc">{description}</p>}
+      <p class="cat-hero-count">
+        {posts.length === 0
+          ? 'Nenhum artigo ainda nesta categoria'
+          : `${posts.length} ${posts.length === 1 ? 'artigo' : 'artigos'} encontrado${posts.length === 1 ? '' : 's'}`}
+      </p>
+    </div>
+  </section>
+
+  <section class="cat-posts section">
+    <div class="container">
+      {posts.length === 0 ? (
+        <div class="cat-empty">
+          <p>Em breve traremos conteúdo sobre <strong>{name}</strong>. Volte mais tarde.</p>
+          <a href="/blog" class="cat-empty-link">Ver todos os artigos →</a>
+        </div>
+      ) : (
+        <div class="blog-grid">
+          {posts.map((post: any) => (
+            <PostCard
+              title={post.data.title}
+              description={post.data.description}
+              pubDate={post.data.pubDate}
+              image={post.data.image}
+              imageAlt={post.data.imageAlt}
+              category={post.data.category}
+              slug={post.id}
+              rating={post.data.rating}
+              badge={post.data.badge}
+              priceRange={post.data.priceRange}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .cat-hero {
+    position: relative;
+    padding: var(--space-3xl) 0 var(--space-2xl);
+    text-align: center;
+    overflow: hidden;
+  }
+  .cat-hero-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--color-primary-surface) 0%, var(--color-bg-cool) 100%);
+    z-index: 0;
+  }
+  .cat-hero-inner { position: relative; z-index: 1; }
+  .cat-hero-title {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: var(--fw-bold);
+    margin: var(--space-sm) 0 var(--space-md);
+    color: var(--color-primary);
+    letter-spacing: var(--ls-tight);
+  }
+  .cat-hero-desc { max-width: 640px; margin: 0 auto var(--space-md); }
+  .cat-hero-count {
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+  .cat-empty {
+    text-align: center;
+    padding: var(--space-3xl) var(--space-md);
+    background: var(--color-bg-cool);
+    border-radius: var(--radius-xl);
+    border: 1px dashed var(--color-border);
+  }
+  .cat-empty p { color: var(--color-text-muted); margin-bottom: var(--space-md); }
+  .cat-empty-link {
+    display: inline-block;
+    color: var(--color-primary);
+    font-weight: var(--fw-semibold);
+    text-decoration: none;
+  }
+  .cat-empty-link:hover { text-decoration: underline; }
+  .blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-xl);
+  }
+</style>
