@@ -15,6 +15,12 @@ const stats = d.stats || [
   { number: '50k+', label: 'Leitores Mensais' },
   { number: '98%', label: 'Satisfação' },
 ];
+const cards = d.cards ?? [
+  { icon: '★', strong: 'Top Pick', span: 'Melhor fone 2024' },
+  { icon: '🔥', strong: 'Trending', span: 'Air Fryer comparativo' },
+  { icon: '✓', strong: 'Verificado', span: 'Review imparcial' },
+];
+const showCards = Array.isArray(cards) && cards.length > 0;
 ---
 
 <section class="hero">
@@ -62,27 +68,15 @@ const stats = d.stats || [
     </div>
 
     <div class="hero-visual">
-      <div class="hero-card hero-card-1">
-        <div class="hero-card-icon">&#9733;</div>
-        <div class="hero-card-text">
-          <strong>Top Pick</strong>
-          <span>Melhor fone 2024</span>
+      {showCards && cards.map((card: any, i: number) => (
+        <div class={`hero-card hero-card-${i + 1}`}>
+          <div class="hero-card-icon">{card.icon}</div>
+          <div class="hero-card-text">
+            <strong>{card.strong}</strong>
+            <span>{card.span}</span>
+          </div>
         </div>
-      </div>
-      <div class="hero-card hero-card-2">
-        <div class="hero-card-icon">&#128293;</div>
-        <div class="hero-card-text">
-          <strong>Trending</strong>
-          <span>Air Fryer comparativo</span>
-        </div>
-      </div>
-      <div class="hero-card hero-card-3">
-        <div class="hero-card-icon">&#10003;</div>
-        <div class="hero-card-text">
-          <strong>Verificado</strong>
-          <span>Review imparcial</span>
-        </div>
-      </div>
+      ))}
       <div class="hero-image-frame">
         <img src={heroImage} alt={title} width="800" height="900" />
       </div>
