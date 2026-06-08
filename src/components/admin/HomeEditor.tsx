@@ -12,6 +12,7 @@ const fileToBase64 = (file: File): Promise<string> => new Promise((resolve, reje
 
 type Stat = { number: string; suffix?: string; label: string; detail?: string };
 type HeroStat = { number: string; label: string };
+type HeroCard = { icon: string; strong: string; span: string };
 type CTA = { text: string; href: string };
 type Feature = { number: string; title: string; description: string };
 
@@ -24,10 +25,12 @@ type HomeConfig = {
         ctaSecondary: CTA;
         image: string;
         stats: HeroStat[];
+        cards?: HeroCard[];
     };
     socialProof: {
         stats: Stat[];
         brands: string[];
+        brandsLabel?: string;
     };
     postsGrid: {
         label: string;
@@ -208,6 +211,19 @@ export default function HomeEditor() {
                         ))}
                         <button onClick={() => set('hero.stats', [...config.hero.stats, { number: '', label: '' }])} className="text-xs text-indigo-600 font-bold flex items-center gap-1 mt-1"><Plus className="w-3 h-3" /> Adicionar</button>
                     </div>
+                    <div>
+                        <label className={labelClass}>Cards Flutuantes (decorativos)</label>
+                        <p className="text-[10px] text-slate-400 mb-2">Caixinhas que aparecem sobre a imagem do hero. Apague todos para esconder.</p>
+                        {(config.hero.cards ?? []).map((card, i) => (
+                            <div key={i} className="grid grid-cols-[60px_1fr_1.5fr_auto] gap-2 mb-2">
+                                <input className={inputClass} value={card.icon} onChange={e => { const c = [...(config.hero.cards ?? [])]; c[i] = { ...c[i], icon: e.target.value }; set('hero.cards', c); }} placeholder="★" />
+                                <input className={inputClass} value={card.strong} onChange={e => { const c = [...(config.hero.cards ?? [])]; c[i] = { ...c[i], strong: e.target.value }; set('hero.cards', c); }} placeholder="Top Pick" />
+                                <input className={inputClass} value={card.span} onChange={e => { const c = [...(config.hero.cards ?? [])]; c[i] = { ...c[i], span: e.target.value }; set('hero.cards', c); }} placeholder="Melhor fone 2024" />
+                                <button onClick={() => { const c = (config.hero.cards ?? []).filter((_, j) => j !== i); set('hero.cards', c); }} className="p-2 text-red-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
+                            </div>
+                        ))}
+                        <button onClick={() => set('hero.cards', [...(config.hero.cards ?? []), { icon: '★', strong: '', span: '' }])} className="text-xs text-indigo-600 font-bold flex items-center gap-1 mt-1"><Plus className="w-3 h-3" /> Adicionar card</button>
+                    </div>
                 </div>
             </SectionCard>
 
@@ -226,6 +242,16 @@ export default function HomeEditor() {
                             </div>
                         ))}
                         <button onClick={() => set('socialProof.stats', [...config.socialProof.stats, { number: '', suffix: '', label: '', detail: '' }])} className="text-xs text-indigo-600 font-bold flex items-center gap-1 mt-1"><Plus className="w-3 h-3" /> Adicionar Estatística</button>
+                    </div>
+                    <div>
+                        <label className={labelClass}>Rótulo acima das marcas</label>
+                        <input
+                            className={inputClass}
+                            value={config.socialProof.brandsLabel ?? 'Avaliamos produtos das maiores plataformas'}
+                            onChange={e => set('socialProof.brandsLabel', e.target.value)}
+                            placeholder="Avaliamos produtos das maiores plataformas"
+                        />
+                        <p className="text-[10px] text-slate-400 mt-1">Texto pequeno que aparece acima das marcas. Apague tudo para esconder.</p>
                     </div>
                     <div>
                         <label className={labelClass}>Marcas / Plataformas</label>
