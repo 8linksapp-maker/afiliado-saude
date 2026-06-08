@@ -25,9 +25,15 @@
         "number": "98%",
         "label": "Satisfação"
       }
+    ],
+    "cards": [
+      { "icon": "★", "strong": "Top Pick", "span": "Melhor fone 2024" },
+      { "icon": "🔥", "strong": "Trending", "span": "Air Fryer comparativo" },
+      { "icon": "✓", "strong": "Verificado", "span": "Review imparcial" }
     ]
   },
   "socialProof": {
+    "brandsLabel": "Avaliamos produtos das maiores plataformas",
     "stats": [
       {
         "number": "4.9",
